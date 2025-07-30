@@ -10,13 +10,11 @@ import useGameMode from '../hooks/useGameMode';
 
 type SubDisplay = 'highscores' | 'controls' | 'scoring' | 'none';
 type SettingsModalProps = {
-  closeSettings: () => void;
-  restartGame: () => void;
+  resetGame: () => void;
   gameState: Game;
 };
 export default function SettingsModal({
-  closeSettings,
-  restartGame,
+  resetGame,
   gameState,
 }: SettingsModalProps) {
   const [_, setHighscores] = useLocalStorage(
@@ -99,11 +97,10 @@ export default function SettingsModal({
           {gameState.blocksSpawned > 0 && (
             <button
               onClick={() => {
-                closeSettings();
-                restartGame();
+                resetGame();
               }}
             >
-              Restart Game
+              Reset Game
             </button>
           )}
           <button onClick={toggleSubDisplay('highscores')}>

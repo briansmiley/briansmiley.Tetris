@@ -119,8 +119,8 @@ export default function MobileApp() {
     setShowSettingsModal(false);
     gameState.blocksSpawned > 0 && unpause();
   };
-  const startNewGame = () => {
-    setGameState(unpauseGame(gameInit(config, gameMode)));
+  const startNewGame = ({startPaused}: {startPaused: boolean}) => {
+    setGameState(startPaused ? gameInit(config, gameMode) : unpauseGame(gameInit(config, gameMode)));
   };
   return (
     <>
@@ -170,7 +170,7 @@ export default function MobileApp() {
           {gameState.blocksSpawned === 0 && (
             <button
               className="border-outset text-default absolute left-1/2 top-1/2 -translate-x-1/2 border-[10px] border-green-500 bg-slate-900 bg-opacity-80 p-4 active:[border-style:inset]"
-              onClick={startNewGame}
+              onClick={() => startNewGame({startPaused: false})}
             >
               Start
             </button>
@@ -188,7 +188,7 @@ export default function MobileApp() {
               </div>
               <HighScoreEntry game={gameState} displayCount={5} />
               <button
-                onClick={startNewGame}
+                onClick={() => startNewGame({startPaused: false})}
                 className="border-outset text-default border-[10px] border-green-500 bg-slate-900 bg-opacity-80 p-4 active:[border-style:inset]"
               >
                 Restart
@@ -202,8 +202,7 @@ export default function MobileApp() {
             className="absolute inset-0 flex h-full w-full flex-col items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm"
           >
             <SettingsModal
-              closeSettings={closeSettings}
-              restartGame={startNewGame}
+              resetGame={() => startNewGame({startPaused: true})}
               gameState={gameState}
             />
           </div>

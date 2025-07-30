@@ -38,7 +38,7 @@ export const GAME_MODE_CONFIG: Record<GameMode, { startLevel: number; descriptio
     description: 'Standard Tetris starting at level 0'
   },
   ADVANCED: {
-    startLevel: 15,
+    startLevel: 10,
     description: 'Advanced mode starting at level 15 for faster gameplay'
   }
 };

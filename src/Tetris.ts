@@ -33,6 +33,7 @@ export type Game = {
   collapseStart: number | null; //timestamp of when rows cleared; we collapse rows after delay
   startTime: number;
   CONFIG: Config;
+  gameMode: GameMode;
 };
 export type Cell = {
   color: Color;
@@ -83,6 +84,7 @@ export const gameInit = (config: Config, gameMode: GameMode = 'BASIC'): Game => 
     clearingRows: [],
     startTime: new Date().getTime(),
     CONFIG: config,
+    gameMode: gameMode,
   };
 };
 export const pauseGame = (game: Game): Game => ({ ...game, paused: true });
@@ -383,7 +385,7 @@ export const clearFullRowsAndScore = (game: Game): Game => {
   const newLevel = Math.max(
     1,
     Math.floor(newLinesCleared / game.CONFIG.LEVEL_LINES)
-  );
+  ) + GAME_MODE_CONFIG[game.gameMode].startLevel;
   const newScore = game.score + clearedLinesScore(rowsToClear.length, game);
   //calculate the new falling speed
   const newGravityTickInterval = game.CONFIG.GRAVITY_LEVELS[newLevel] || 0;
