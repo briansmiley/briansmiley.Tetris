@@ -1,0 +1,5 @@
+-- CreateEnum
+CREATE TYPE "GAME_MODE" AS ENUM ('BASIC', 'ADVANCED');
+
+-- AlterTable
+ALTER TABLE "HighScore" ADD COLUMN     "gameMode" "GAME_MODE" NOT NULL DEFAULT 'BASIC';

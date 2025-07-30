@@ -6,6 +6,7 @@ import { useBreakpoint } from 'use-breakpoint';
 import { useState } from 'react';
 import LocalGlobalToggle from './LocalGlobalToggle';
 import { Globe } from 'lucide-react';
+import useGameMode from '../../hooks/useGameMode';
 type HighScoreListProps = {
   scoreCount: number;
   highlightScore?: number;
@@ -17,6 +18,7 @@ export default function HighScoreList({
 }: HighScoreListProps) {
   const [displayGlobal, setDisplayGlobal] = useState(false);
   const [localHighScores, _] = useLocalHighZcores();
+  const [gameMode] = useGameMode();
   const { breakpoint } = useBreakpoint(BREAKPOINTS);
   const platform: Platform = breakpoint === 'mobile' ? 'MOBILE' : 'DESKTOP';
 
@@ -33,7 +35,10 @@ export default function HighScoreList({
       return data;
     },
   });
-  const scoreList = displayGlobal ? query.data || [] : localHighScores;
+  // Filter scores by current game mode
+  const filteredGlobalScores = (query.data || []).filter(score => score.gameMode === gameMode);
+  const filteredLocalScores = localHighScores.filter(score => score.gameMode === gameMode);
+  const scoreList = displayGlobal ? filteredGlobalScores : filteredLocalScores;
   //Toggles row background in highscore list
   const bgClass = (index: number, highscore: HighScore) => {
     if (highlightScore && highscore.gameStartTime === highlightScore) {
@@ -55,9 +60,14 @@ export default function HighScoreList({
           toggleGlobal={() => setDisplayGlobal(!displayGlobal)}
         />
       </div>
-      <span className="text-default self-center p-2 text-xl font-semibold underline">
-        High Scores
-      </span>
+      <div className="flex flex-col items-center gap-1">
+        <span className="text-default self-center text-xl font-semibold underline">
+          High Scores
+        </span>
+        <span className="text-sm text-gray-300">
+          {gameMode} Mode
+        </span>
+      </div>
       <div className="flex flex-col items-center">
         <div
           className={`text-md relative flex w-full justify-between bg-slate-900 px-3 py-1 font-semibold text-white underline`}

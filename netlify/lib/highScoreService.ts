@@ -1,10 +1,14 @@
 import prisma from '../../src/client';
-import { HighScore, Platform } from '../../src/lib/highscores';
+import { HighScore, Platform, GameMode } from '../../src/lib/highscores';
+import { GAME_MODES } from '../../src/TetrisConfig';
 import { HighScore as DbHighScore } from '@prisma/client';
 const mutations = {
   post: async (newHighScore: HighScore, platform: Platform) => {
     const topScores = await prisma.highScore.findMany({
-      where: { platform: platform },
+      where: { 
+        platform: platform,
+        gameMode: newHighScore.gameMode
+      },
       orderBy: { score: 'desc' },
       take: 100,
     });
@@ -26,6 +30,7 @@ const mutations = {
         gameStartTime: newHighScore.gameStartTime.toString(),
         linesCleared: newHighScore.linesCleared,
         platform: platform,
+        gameMode: newHighScore.gameMode,
       },
     });
     console.log(`Inserted new high score into database: ${dbRes}`);
@@ -54,12 +59,22 @@ const queries = {
   },
 };
 
-const transformHighScore = (highScore: DbHighScore): HighScore => ({
-  score: highScore.score,
-  initials: highScore.initials,
-  gameStartTime: parseInt(highScore.gameStartTime),
-  linesCleared: highScore.linesCleared,
-});
+const isValidGameMode = (gameMode: string): gameMode is GameMode => {
+  return GAME_MODES.includes(gameMode as GameMode);
+};
+
+const transformHighScore = (highScore: DbHighScore): HighScore => {
+  if (!isValidGameMode(highScore.gameMode)) {
+    throw new Error(`Invalid game mode: ${highScore.gameMode}. Expected one of: ${GAME_MODES.join(', ')}`);
+  }
+  return {
+    score: highScore.score,
+    initials: highScore.initials,
+    gameStartTime: parseInt(highScore.gameStartTime),
+    linesCleared: highScore.linesCleared,
+    gameMode: highScore.gameMode,
+  };
+};
 type IHighScoreService = {
   /**Returns the rank of the new highscore if it is inserted, and null if it didnt make the cut */
   post: (

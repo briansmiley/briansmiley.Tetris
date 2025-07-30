@@ -22,6 +22,7 @@ import HighScoreEntry from './components/HighScores/HighScoreEntry';
 import SettingsModal from './components/SettingsModal';
 import useStateWithRef from './hooks/useStateWithRef';
 import PieceDisplay from './components/PieceDisplay';
+import useGameMode from './hooks/useGameMode';
 const music = new Audio(ThemeSong);
 const startMusic = () => {
   music.loop = true;
@@ -49,8 +50,9 @@ const keyBindings: KeyBinding[] = [
 const cellBorderStyles = ['outset', 'none'];
 const config = { ...CONFIG, WALLS: true };
 function DesktopApp() {
+  const [gameMode] = useGameMode();
   const [gameState, setGameState, gameStateRef] = useStateWithRef(
-    gameInit(config)
+    gameInit(config, gameMode)
   );
   const [unMuted, setMuted] = useState<boolean | null>(null);
   const [cellBorderStyleIndex, setCellBorderStyle] = useState(0);
@@ -185,7 +187,7 @@ function DesktopApp() {
     };
   }, []);
   const startNewGame = () => {
-    setGameState(unpauseGame(gameInit(config)));
+    setGameState(unpauseGame(gameInit(config, gameMode)));
   };
   return (
     <>

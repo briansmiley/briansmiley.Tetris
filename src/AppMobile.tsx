@@ -18,11 +18,13 @@ import { SwipeEventData, useSwipeable } from 'react-swipeable';
 import HighScoreEntry from './components/HighScores/HighScoreEntry';
 import SettingsModal from './components/SettingsModal';
 import { Settings } from 'lucide-react';
+import useGameMode from './hooks/useGameMode';
 
 const cellBorderStyles = ['outset', 'none'];
 const config = { ...CONFIG, WALLS: false };
 export default function MobileApp() {
-  const [gameState, setGameState] = useState(gameInit(config));
+  const [gameMode] = useGameMode();
+  const [gameState, setGameState] = useState(gameInit(config, gameMode));
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [cellBorderStyleIndex] = useState(0);
   const softDroppingRef = useRef(false);
@@ -118,7 +120,7 @@ export default function MobileApp() {
     gameState.blocksSpawned > 0 && unpause();
   };
   const startNewGame = () => {
-    setGameState(unpauseGame(gameInit(config)));
+    setGameState(unpauseGame(gameInit(config, gameMode)));
   };
   return (
     <>

@@ -1,7 +1,7 @@
 import { CONFIG } from './TetrisConfig';
 //prettier-ignore
-import type {Config,Coordinate,TetrisShape,InputCategory,Color} from "./TetrisConfig";
-import { SHAPE_NAMES } from './TetrisConfig';
+import type {Config,Coordinate,TetrisShape,InputCategory,Color,GameMode} from "./TetrisConfig";
+import { SHAPE_NAMES, GAME_MODE_CONFIG } from './TetrisConfig';
 /**
  * Types
  */
@@ -57,7 +57,10 @@ type ConditionalNull<argType, nonNullArgType, returnType> =
  */
 
 /**creates a new blank slate game object; requires a call to spawnNewBlock() to create first falling block */
-export const gameInit = (config: Config): Game => {
+export const gameInit = (config: Config, gameMode: GameMode = 'BASIC'): Game => {
+  const startLevel = GAME_MODE_CONFIG[gameMode].startLevel;
+  const startLevelGravityInterval = config.GRAVITY_LEVELS[startLevel] || config.STARTING_G_TICK_INTERVAL;
+  
   return {
     board: newBlankBoard(config),
     clock: 0, //global timestamp
@@ -67,9 +70,9 @@ export const gameInit = (config: Config): Game => {
     heldShape: null,
     score: 0,
     linesCleared: 0,
-    level: 1,
+    level: startLevel,
     blocksSpawned: 0,
-    gravityTickInterval: config.STARTING_G_TICK_INTERVAL,
+    gravityTickInterval: startLevelGravityInterval,
     maxGroundTime: config.BASE_MAX_GROUND_TIME,
     settleTime: config.BASE_SETTLE_TIME,
     over: false,

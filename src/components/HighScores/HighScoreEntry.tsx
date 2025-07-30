@@ -7,6 +7,7 @@ import { BREAKPOINTS } from '../../App';
 import { useBreakpoint } from 'use-breakpoint';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { PostHighScoreReqBody } from '../../../netlify/lib/interface';
+import useGameMode from '../../hooks/useGameMode';
 type HighScoreEntryProps = {
   game: Game;
   displayCount?: number;
@@ -19,6 +20,7 @@ export default function HighScoreEntry({
   const [errorMessage, setErrorMessage] = useState('');
   const [initials, setInitials] = useState('');
   const [highscores, setHighscores] = useLocalHighZcores();
+  const [gameMode] = useGameMode();
   const sortedHighscores = sortHighScores(highscores);
   const { breakpoint } = useBreakpoint(BREAKPOINTS);
   const platform: Platform = breakpoint === 'mobile' ? 'MOBILE' : 'DESKTOP';
@@ -82,6 +84,7 @@ export default function HighScoreEntry({
       initials,
       gameStartTime: game.startTime,
       linesCleared: game.linesCleared,
+      gameMode,
     };
     setHighscores((prev) => {
       const newHighscores = [...prev, newHighScore];

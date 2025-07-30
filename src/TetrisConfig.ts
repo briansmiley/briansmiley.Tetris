@@ -28,6 +28,20 @@ export type Coordinate = [number, number];
 export type InputCategory = 'rotate' | 'shift' | 'drop' | 'hold';
 export const SHAPE_NAMES = ['I', 'T', 'O', 'S', 'Z', 'L', 'J'] as const;
 export type TetrisShape = (typeof SHAPE_NAMES)[number];
+
+export const GAME_MODES = ['BASIC', 'ADVANCED'] as const;
+export type GameMode = (typeof GAME_MODES)[number];
+
+export const GAME_MODE_CONFIG: Record<GameMode, { startLevel: number; description: string }> = {
+  BASIC: {
+    startLevel: 0,
+    description: 'Standard Tetris starting at level 0'
+  },
+  ADVANCED: {
+    startLevel: 15,
+    description: 'Advanced mode starting at level 15 for faster gameplay'
+  }
+};
 export const CONFIG: Config = {
   BLOCK_SHAPES: {
     I: [
