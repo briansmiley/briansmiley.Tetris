@@ -6,22 +6,24 @@ import ControlsInfo from './ControlsInfo';
 import { Game } from '../Tetris';
 import ScoringInfo from './ScoringInfo';
 import { GAME_MODES, GAME_MODE_CONFIG, GameMode } from '../TetrisConfig';
-import useGameMode from '../hooks/useGameMode';
 
 type SubDisplay = 'highscores' | 'controls' | 'scoring' | 'none';
 type SettingsModalProps = {
   resetGame: () => void;
   gameState: Game;
+  gameMode: GameMode;
+  setGameMode: (gameMode: GameMode) => void;
 };
 export default function SettingsModal({
   resetGame,
   gameState,
+  gameMode,
+  setGameMode,
 }: SettingsModalProps) {
   const [_, setHighscores] = useLocalStorage(
     'tetris-highscores',
     defaultHighscores
   );
-  const [gameMode, setGameMode] = useGameMode();
   const [subDisplay, setSubDisplay] = useState<SubDisplay>('none');
   const [showGameModeDropdown, setShowGameModeDropdown] = useState(false);
   const resetHighScores = () => {
@@ -116,7 +118,7 @@ export default function SettingsModal({
       )}
       {subDisplay === 'highscores' && (
         <div className={`flex w-[90%] origin-top flex-col items-center`}>
-          <HighScoreList scoreCount={5} highlightScore={gameState.startTime} />
+          <HighScoreList scoreCount={5} highlightScore={gameState.startTime} gameMode={gameMode} />
         </div>
       )}
       {subDisplay === 'scoring' && (

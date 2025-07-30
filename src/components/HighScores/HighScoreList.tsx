@@ -1,4 +1,4 @@
-import { HighScore, Platform } from '../../lib/highscores';
+import { GameMode, HighScore, Platform } from '../../lib/highscores';
 import useLocalHighZcores from '../../hooks/useHighScoreZtorage';
 import { useQuery } from '@tanstack/react-query';
 import { BREAKPOINTS } from '../../App';
@@ -6,19 +6,19 @@ import { useBreakpoint } from 'use-breakpoint';
 import { useState } from 'react';
 import LocalGlobalToggle from './LocalGlobalToggle';
 import { Globe } from 'lucide-react';
-import useGameMode from '../../hooks/useGameMode';
 type HighScoreListProps = {
   scoreCount: number;
   highlightScore?: number;
+  gameMode: GameMode;
 };
 
 export default function HighScoreList({
   scoreCount,
   highlightScore,
+  gameMode,
 }: HighScoreListProps) {
   const [displayGlobal, setDisplayGlobal] = useState(false);
   const [localHighScores, _] = useLocalHighZcores();
-  const [gameMode] = useGameMode();
   const { breakpoint } = useBreakpoint(BREAKPOINTS);
   const platform: Platform = breakpoint === 'mobile' ? 'MOBILE' : 'DESKTOP';
 

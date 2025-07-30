@@ -50,7 +50,7 @@ const keyBindings: KeyBinding[] = [
 const cellBorderStyles = ['outset', 'none'];
 const config = { ...CONFIG, WALLS: true };
 function DesktopApp() {
-  const [gameMode] = useGameMode();
+  const [gameMode, setGameMode] = useGameMode();
   const [gameState, setGameState, gameStateRef] = useStateWithRef(
     gameInit(config, gameMode)
   );
@@ -72,6 +72,7 @@ function DesktopApp() {
     );
     const handleKeyDowns = (e: KeyboardEvent) => {
       if (gameStateRef.current.paused) return;
+
       keyBindings.forEach((binding) => {
         if (
           binding.type === 'shift' ||
@@ -177,7 +178,15 @@ function DesktopApp() {
       const prevents = [' ', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
       if (prevents.includes(e.key)) e.preventDefault(); //prevent space from clicking bc it does weird stuff
       if (e.key === 'Escape') {
-        closeSettings();
+        setShowSettingsModal(prev => {
+          if (prev) {
+            closeSettings();
+            return false;
+          } else {
+            openSettings();
+            return true;
+          }
+        })
       }
     };
 
@@ -257,6 +266,8 @@ function DesktopApp() {
                   <SettingsModal
                     resetGame={() => startNewGame({startPaused: true})}
                     gameState={gameState}
+                    gameMode={gameMode}
+                    setGameMode={setGameMode}
                   />
                 </div>
               </>

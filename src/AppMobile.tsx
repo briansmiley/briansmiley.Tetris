@@ -23,7 +23,7 @@ import useGameMode from './hooks/useGameMode';
 const cellBorderStyles = ['outset', 'none'];
 const config = { ...CONFIG, WALLS: false };
 export default function MobileApp() {
-  const [gameMode] = useGameMode();
+  const [gameMode, setGameMode] = useGameMode();
   const [gameState, setGameState] = useState(gameInit(config, gameMode));
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [cellBorderStyleIndex] = useState(0);
@@ -203,7 +203,9 @@ export default function MobileApp() {
           >
             <SettingsModal
               resetGame={() => startNewGame({startPaused: true})}
+              gameMode={gameMode}
               gameState={gameState}
+              setGameMode={setGameMode}
             />
           </div>
         )}
