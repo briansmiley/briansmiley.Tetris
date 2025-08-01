@@ -422,7 +422,10 @@ const clearedLinesScore = (lines: number, game: Game): number => {
 export const collapseGapRows = (game: Game): Game => {
   const { board } = game;
   const firstNonEmptyRowIndex = board.findIndex(rowIncludesBlock);
-  if (firstNonEmptyRowIndex === -1) return game;
+  if (firstNonEmptyRowIndex === -1) {
+    // If all rows are empty (full board clear), reset collapseStart and continue
+    return { ...game, collapseStart: null };
+  }
   //indices of the empty rows below the topmost nonempty row
   const emptyRowIndices = board
     .map((row, rowIndex) =>
