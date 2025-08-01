@@ -415,12 +415,13 @@ export const clearFullRowsAndScore = (game: Game): Game => {
 };
 
 const clearedLinesScore = (lines: number, game: Game): number => {
-  return game.CONFIG.LINES_CLEARED_SCORE[lines] * game.level;
+  return game.CONFIG.LINES_CLEARED_SCORE[lines] * (Math.max(game.level,1));
 };
 
 /**Settle the board squares above a clear by an amount equal to the clear*/
 export const collapseGapRows = (game: Game): Game => {
   const { board } = game;
+
   const firstNonEmptyRowIndex = board.findIndex(rowIncludesBlock);
   if (firstNonEmptyRowIndex === -1) {
     // If all rows are empty (full board clear), reset collapseStart and continue
@@ -704,3 +705,33 @@ export const miniHeldBoard = (heldShape: TetrisShape | null, config: Config) =>
   heldShape
     ? miniPreviewBoard([heldShape], config)
     : miniPreviewBoard([], config);
+
+
+export const debug = {
+  fullClearReady: (game: Game = gameInit(CONFIG, "BASIC")): Game => {
+    const config = game.CONFIG
+    const newBoard = newBlankBoard(config)
+    const startingRow = config.WALLS ? 5 : 4
+    for (let i = 0; i < 4; i++) {
+      for (let c = 0; c < config.BOARD_WIDTH; c++) {
+        const colIdx = config.WALLS ? c + 1 : c;
+        if (c === config.BOARD_WIDTH - 1) continue;
+        newBoard[newBoard.length - startingRow + i][colIdx] = {
+          color: config.SHAPE_COLORS['I'], // Use 'I' as a default color
+          type: 'block',
+        };
+      }
+    }
+    return {
+      ...game,
+      board: newBoard
+    }
+  },
+  setNextBlock: (game:Game, nextBlock: TetrisShape) => {
+    const newQueue = [nextBlock].concat([...game.shapeQueue])
+    return {
+      ...game,
+      shapeQueue: newQueue,
+    }
+  }
+}
