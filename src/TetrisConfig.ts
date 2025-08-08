@@ -134,8 +134,13 @@ export const CONFIG: Config = {
     27: 45,
     28: 35,
     29: 25,
-    30: 15,
-    31: 5,
+    30: 19,
+    31: 15,
+    32: 10,
+    33: 8,
+    34: 6,
+    35: 5,
+    36: 1
   },
   SPEED_SCALING: 50, //how many milliseconds to take off the tick time for each level
 
