@@ -32,13 +32,14 @@ export default function ScoringInfo() {
             <span className="basis-1/2 text-center">1 x distance</span>
           </div>
           <div className="flex w-full justify-between">
-            <span className="basis-1/2 text-center">Hard drop</span>
-            <span className="basis-1/2 text-center">2 x distance</span>
+            <span className="basis-1/2 text-center">Hard drop<sup>**</sup></span>
+            <span className="basis-1/2 text-center">2 x distance<sup>**</sup></span>
           </div>
         </div>
       </div>
       <span className="text-center text-xs">
         <sup>*</sup>multiplied by your current level
+        <sup>**</sup>multiplied by half your current level
       </span>
     </div>
   );
