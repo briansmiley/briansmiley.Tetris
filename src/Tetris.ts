@@ -6,6 +6,19 @@ import { SHAPE_NAMES, GAME_MODE_CONFIG } from './TetrisConfig';
  * Types
  */
 
+export type GameStats = {
+  lineClears: {
+    single: { count: number; score: number };
+    double: { count: number; score: number };
+    triple: { count: number; score: number };
+    tetris: { count: number; score: number };
+  };
+  drops: {
+    hard: { totalDistance: number; score: number };
+    soft: { totalDistance: number; score: number };
+  };
+};
+
 export type Game = {
   board: Board;
   clock: number;
@@ -34,6 +47,7 @@ export type Game = {
   startTime: number;
   CONFIG: Config;
   gameMode: GameMode;
+  stats: GameStats;
 };
 export type Cell = {
   color: Color;
@@ -85,6 +99,18 @@ export const gameInit = (config: Config, gameMode: GameMode = 'BASIC'): Game => 
     startTime: new Date().getTime(),
     CONFIG: config,
     gameMode: gameMode,
+    stats: {
+      lineClears: {
+        single: { count: 0, score: 0 },
+        double: { count: 0, score: 0 },
+        triple: { count: 0, score: 0 },
+        tetris: { count: 0, score: 0 },
+      },
+      drops: {
+        hard: { totalDistance: 0, score: 0 },
+        soft: { totalDistance: 0, score: 0 },
+      },
+    },
   };
 };
 export const pauseGame = (game: Game): Game => ({ ...game, paused: true });
@@ -175,7 +201,10 @@ export const tickGameClock = (game: Game): Game => {
     : newGameNewBlock;
 };
 
-const endGame = (game: Game): Game => ({ ...game, over: true });
+const endGame = (game: Game): Game => {
+  console.log('Game Over - Final Stats:', game.stats);
+  return { ...game, over: true };
+};
 
 const newBlockFromShape = (game: Game, shape: TetrisShape): Block => ({
   origin: game.CONFIG.SPAWN_POINT,
@@ -386,13 +415,25 @@ export const clearFullRowsAndScore = (game: Game): Game => {
     1,
     Math.floor(newLinesCleared / game.CONFIG.LEVEL_LINES)
   ) + GAME_MODE_CONFIG[game.gameMode].startLevel;
-  const newScore = game.score + clearedLinesScore(rowsToClear.length, game);
+  const lineScore = clearedLinesScore(rowsToClear.length, game);
+  const newScore = game.score + lineScore;
+  
+  // Update stats based on line clear type
+  const newStats = { ...game.stats };
+  if (rowsToClear.length >= 1 && rowsToClear.length <= 4) {
+    const clearTypes = ['single', 'double', 'triple', 'tetris'] as const;
+    const clearType = clearTypes[rowsToClear.length - 1];
+    newStats.lineClears[clearType].count += 1;
+    newStats.lineClears[clearType].score += lineScore;
+  }
+  
   //calculate the new falling speed
   const newGravityTickInterval = game.CONFIG.GRAVITY_LEVELS[newLevel] || 0;
   return {
     ...game,
     clearingStart: null, // clearing is over
     score: newScore,
+    stats: newStats,
     linesCleared: newLinesCleared,
     level: newLevel,
     gravityTickInterval: newGravityTickInterval,
@@ -416,6 +457,14 @@ export const clearFullRowsAndScore = (game: Game): Game => {
 
 const clearedLinesScore = (lines: number, game: Game): number => {
   return game.CONFIG.LINES_CLEARED_SCORE[lines] * (Math.max(game.level,1));
+};
+
+const scoreHardDrop = (distance: number, level: number): number => {
+  return distance * 2 * level;
+};
+
+const scoreSoftDrop = (distance: number, level: number): number => {
+  return distance * level;
 };
 
 /**Settle the board squares above a clear by an amount equal to the clear*/
@@ -574,19 +623,39 @@ export const holdAndPopHeld = (game: Game): Game => {
 export const shiftBlock = (game: Game, direction: Direction): Game => {
   if (game.fallingBlock === null || game.paused) return game;
   const nextBlock = shiftedBlock(game.fallingBlock.self, direction, 1);
-  const shiftScore = direction === 'D' ? game.level : 0;
-  return blockIntersectsSettledOrWalls(game.board, nextBlock, game.CONFIG.WALLS)
-    ? game
-    : {
-        ...game,
-        score: game.score + shiftScore, 
-        fallingBlock: {
-          ...game.fallingBlock,
-          groundTimer: game.settleTime,
-          self: nextBlock,
-          dropLocation: hardDropEndOrigin(game.board, nextBlock),
+  if (blockIntersectsSettledOrWalls(game.board, nextBlock, game.CONFIG.WALLS)) {
+    return game;
+  }
+  
+  let newScore = game.score;
+  let newStats = game.stats;
+  
+  if (direction === 'D') {
+    const dropScore = scoreSoftDrop(1, game.level);
+    newScore += dropScore;
+    newStats = {
+      ...game.stats,
+      drops: {
+        ...game.stats.drops,
+        soft: {
+          totalDistance: game.stats.drops.soft.totalDistance + 1,
+          score: game.stats.drops.soft.score + dropScore,
         },
-      };
+      },
+    };
+  }
+  
+  return {
+    ...game,
+    score: newScore,
+    stats: newStats,
+    fallingBlock: {
+      ...game.fallingBlock,
+      groundTimer: game.settleTime,
+      self: nextBlock,
+      dropLocation: hardDropEndOrigin(game.board, nextBlock),
+    },
+  };
 };
 
 /**Returns the block that would result from a hypothetical hard drop */
@@ -631,14 +700,31 @@ const hardDropEndOrigin = (
 /**Drops a block all the way to the settled pile settles it into the board*/
 export const hardDropBlock = (game: Game): Game => {
   if (game.fallingBlock === null || game.over || game.paused) return game;
-  const newBlockOrigin = hardDropEndOrigin(game.board, game.fallingBlock.self); //get the position of a hard drop
+  const newBlockOrigin = hardDropEndOrigin(game.board, game.fallingBlock.self);
   const newBlock = {
     ...game.fallingBlock,
     self: { ...game.fallingBlock.self, origin: newBlockOrigin },
   };
   const droppedDistance = newBlockOrigin[0] - game.fallingBlock.self.origin[0];
-  const newScore = game.score + droppedDistance * 2 * game.level  //2 points per cell for hard dropping
-  return settleBlock({ ...game, score: newScore, fallingBlock: newBlock }); //move the falling block to that end position, settle, and spawn new
+  const dropScore = scoreHardDrop(droppedDistance, game.level);
+  
+  const newStats = {
+    ...game.stats,
+    drops: {
+      ...game.stats.drops,
+      hard: {
+        totalDistance: game.stats.drops.hard.totalDistance + droppedDistance,
+        score: game.stats.drops.hard.score + dropScore,
+      },
+    },
+  };
+  
+  return settleBlock({ 
+    ...game, 
+    score: game.score + dropScore, 
+    stats: newStats,
+    fallingBlock: newBlock 
+  });
 };
 
 /** Returns a board containing the fallingBlock cells filled in for rendering purposes */

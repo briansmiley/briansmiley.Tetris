@@ -31,6 +31,12 @@ export default function MobileApp() {
   const [lastShiftSteps, setLastShiftSteps] = useState(0); //how many steps from swipe origin we have shifted the current block
   const [swipeStart, setSwipeStart] = useState(0);
 
+  // Expose gameStats to console for inspection
+  useEffect(() => {
+    (window as any).gameStats = () => gameState.stats;
+    (window as any).game = () => gameState;
+  }, [gameState]);
+
   //Increment game clock every tickInterval ms
   useEffect(() => {
     const tickInterval = setInterval(
