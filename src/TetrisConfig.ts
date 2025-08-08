@@ -34,7 +34,7 @@ export type GameMode = (typeof GAME_MODES)[number];
 
 export const GAME_MODE_CONFIG: Record<GameMode, { startLevel: number; description: string }> = {
   BASIC: {
-    startLevel: 0,
+    startLevel: 1,
     description: 'Standard Tetris starting at level 0'
   },
   ADVANCED: {
