@@ -574,11 +574,12 @@ export const holdAndPopHeld = (game: Game): Game => {
 export const shiftBlock = (game: Game, direction: Direction): Game => {
   if (game.fallingBlock === null || game.paused) return game;
   const nextBlock = shiftedBlock(game.fallingBlock.self, direction, 1);
+  const shiftScore = direction === 'D' ? game.level : 0;
   return blockIntersectsSettledOrWalls(game.board, nextBlock, game.CONFIG.WALLS)
     ? game
     : {
         ...game,
-        score: direction === 'D' ? game.score + (Math.max(1, Math.floor(game.level/2)) : game.score, 
+        score: game.score + shiftScore, 
         fallingBlock: {
           ...game.fallingBlock,
           groundTimer: game.settleTime,
@@ -636,7 +637,7 @@ export const hardDropBlock = (game: Game): Game => {
     self: { ...game.fallingBlock.self, origin: newBlockOrigin },
   };
   const droppedDistance = newBlockOrigin[0] - game.fallingBlock.self.origin[0];
-  const newScore = game.score + droppedDistance * 2 * (Math.max(1, Math.floor(game.level/2)); //2 points per cell for hard dropping
+  const newScore = game.score + droppedDistance * 2 * game.level  //2 points per cell for hard dropping
   return settleBlock({ ...game, score: newScore, fallingBlock: newBlock }); //move the falling block to that end position, settle, and spawn new
 };
 
