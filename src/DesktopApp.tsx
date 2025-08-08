@@ -60,6 +60,13 @@ function DesktopApp() {
   const keysPressedRef = useRef(keysPressed);
   const currentlyShiftingRef = useRef(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  
+  // Expose gameStats to console for inspection
+  useEffect(() => {
+    (window as any).gameStats = () => gameStateRef.current.stats;
+    (window as any).game = () => gameStateRef.current;
+  }, []);
+  
   //Sync up gamestate and keyspressed refs
   useEffect(() => {
     keysPressedRef.current = keysPressed;
