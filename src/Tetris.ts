@@ -574,7 +574,7 @@ export const shiftBlock = (game: Game, direction: Direction): Game => {
     ? game
     : {
         ...game,
-        score: direction === 'D' ? game.score + 1 : game.score, //1 point per block for soft dropping
+        score: direction === 'D' ? game.score + (Math.max(1, Math.floor(game.level/2)) : game.score, 
         fallingBlock: {
           ...game.fallingBlock,
           groundTimer: game.settleTime,
@@ -632,7 +632,7 @@ export const hardDropBlock = (game: Game): Game => {
     self: { ...game.fallingBlock.self, origin: newBlockOrigin },
   };
   const droppedDistance = newBlockOrigin[0] - game.fallingBlock.self.origin[0];
-  const newScore = game.score + droppedDistance * 2; //2 points per cell for hard dropping
+  const newScore = game.score + droppedDistance * 2 * (Math.max(1, Math.floor(game.level/2)); //2 points per cell for hard dropping
   return settleBlock({ ...game, score: newScore, fallingBlock: newBlock }); //move the falling block to that end position, settle, and spawn new
 };
 
