@@ -20,10 +20,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": [
-    "src",
-    "netlify/lib/controller.ts",
-    "netlify/highScoreService.ts"
-  ],
+  "include": ["src", "server", "api"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

@@ -48,7 +48,7 @@ export default function HighScoreEntry({
         highScore: newHighScore,
         platform,
       };
-      const response = await fetch(`/.netlify/functions/postHighScore`, {
+      const response = await fetch(`/api/postHighScore`, {
         method: 'POST',
         body: JSON.stringify(highScorePostBody),
         headers: {

@@ -27,7 +27,7 @@ export default function HighScoreList({
   const query = useQuery({
     queryKey: ['highscores', platform],
     queryFn: async () => {
-      const response = await fetch(`/getHighScores/${platform}`);
+      const response = await fetch(`/api/getHighScores/${platform}`);
       if (!response.ok) {
         throw new Error('Failed to fetch high scores');
       }

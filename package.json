@@ -6,11 +6,11 @@
   "scripts": {
     "dev": "vite --host",
     "build": "prisma generate && tsc && vite build",
+    "postinstall": "prisma generate",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
   "dependencies": {
-    "@netlify/functions": "^2.8.1",
     "@prisma/client": "^5.19.0",
     "@tanstack/react-query": "^5.53.2",
     "lucide-react": "^0.395.0",
