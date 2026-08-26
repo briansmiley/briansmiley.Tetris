@@ -6,7 +6,7 @@ import { Game } from '../../Tetris';
 import { BREAKPOINTS } from '../../App';
 import { useBreakpoint } from 'use-breakpoint';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { PostHighScoreReqBody } from '../../../netlify/lib/interface';
+import { PostHighScoreReqBody } from '../../../server/interface';
 type HighScoreEntryProps = {
   game: Game;
   displayCount?: number;
