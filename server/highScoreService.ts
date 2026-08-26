@@ -1,6 +1,6 @@
-import prisma from '../../src/client';
-import { HighScore, Platform, GameMode } from '../../src/lib/highscores';
-import { GAME_MODES } from '../../src/TetrisConfig';
+import prisma from '../src/client';
+import { HighScore, Platform, GameMode } from '../src/lib/highscores';
+import { GAME_MODES } from '../src/TetrisConfig';
 import { HighScore as DbHighScore } from '@prisma/client';
 const mutations = {
   post: async (newHighScore: HighScore, platform: Platform) => {

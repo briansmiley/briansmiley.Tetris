@@ -1,4 +1,4 @@
-import { HighScore, Platform } from '../../src/lib/highscores';
+import { HighScore, Platform } from '../src/lib/highscores';
 import highScoreService from './highScoreService';
 
 const controller = {

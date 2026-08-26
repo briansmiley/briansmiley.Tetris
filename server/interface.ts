@@ -1,4 +1,4 @@
-import { HighScore, Platform } from '../../src/lib/highscores';
+import { HighScore, Platform } from '../src/lib/highscores';
 
 export type GetHighScoresReqBody = {
   platform: Platform | 'ALL';
